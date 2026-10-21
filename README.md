@@ -27,4 +27,4 @@
 
 ## 论文专题
 
-`dist/paper.html` 详细拆解《Modeling Habitat Suitability of Migratory Birds from Remote Sensing Images Using Convolutional Neural Networks》，并将其“鸟类轨迹—遥感—机器学习”方法迁移到青海湖湿地演变、水鸟栖息地和未来生态风险研究构想。
+`dist/paper.html` 是《Modeling Habitat Suitability of Migratory Birds from Remote Sensing Images Using Convolutional Neural Networks》的独立精读页面，详细介绍研究问题、数据与标签、DBIC算法、M-CNN结构、实验设计、定量和空间结果、贡献与局限；页面末章再说明怎样把方法迁移到青海湖湿地项目。

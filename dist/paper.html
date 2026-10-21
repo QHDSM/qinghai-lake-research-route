@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="逐步拆解斑头雁轨迹、Landsat遥感、气温序列与机器学习如何共同生成青海湖栖息地适宜性地图，并将方法迁移到青海湖湿地演变与未来生态风险项目。">
-  <title>从鸟类轨迹到未来栖息地｜论文方法与项目转化</title>
+  <meta name="description" content="深度解析斑头雁GPS轨迹、DBIC停歇地识别、Landsat遥感、气温序列、M-CNN和SVM如何共同生成青海湖栖息地适宜性地图。">
+  <title>论文精读｜从迁徙轨迹到栖息地适宜性地图</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -12,272 +12,141 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="wordmark" href="paper.html" aria-label="论文专题首页">
-      <span class="wordmark-mark">066</span>
-      <span>迁徙栖息地研究档案</span>
-    </a>
+    <a class="wordmark" href="#top" aria-label="论文精读首页"><span class="wordmark-mark">066</span><span>论文精读档案</span></a>
     <nav aria-label="页面导航">
-      <a href="#method">他们怎么做</a>
-      <a href="#evidence">结果怎么看</a>
-      <a href="#translate">我能怎么用</a>
-      <a href="#plan">实施路线</a>
-      <a href="#limits">不足与创新</a>
+      <a href="#question">研究问题</a><a href="#data">数据与标签</a><a href="#dbic">DBIC算法</a><a href="#method">模型结构</a><a href="#evidence">实验结果</a><a href="#critique">贡献与不足</a><a href="#application">项目应用</a>
     </nav>
-    <a class="atlas-link" href="index.html">原项目图谱 ↗</a>
+    <a class="atlas-link" href="index.html">项目图谱 ↗</a>
   </header>
 
   <main>
     <section class="hero" id="top">
       <div class="hero-copy">
-        <p class="eyebrow">PAPER → METHOD → PROJECT / 青海湖专题</p>
-        <h1>从鸟类轨迹，<br>走到未来栖息地。</h1>
-        <p class="hero-lead">详细拆解一篇把斑头雁GPS轨迹、Landsat遥感和气温序列连接起来的机器学习论文，并把其中真正可迁移的方法，接入你的“湿地变化—湖泊扩张—水鸟响应—保护决策”新构想。</p>
-        <div class="hero-actions">
-          <a class="button primary" href="#method">沿方法链阅读 ↓</a>
-          <a class="button ghost" href="https://doi.org/10.3390/ani8050066" target="_blank" rel="noopener">查看论文原文 ↗</a>
-        </div>
-        <div class="citation-line">
-          Su, Piao, Luo &amp; Yan · <em>Animals</em> 2018, 8(5), 66
-        </div>
+        <p class="eyebrow">DEEP READING / ANIMALS 2018 · 8(5) · 66</p>
+        <h1>从迁徙轨迹，<br>到栖息地地图。</h1>
+        <p class="hero-lead">这篇论文研究的核心不是“如何识别一只鸟”，而是如何把稀疏的动物移动数据转化为遥感影像的监督标签，再用空间影像与温度时间序列预测斑头雁潜在栖息地。</p>
+        <div class="hero-actions"><a class="button primary" href="#question">开始精读 ↓</a><a class="button ghost" href="https://doi.org/10.3390/ani8050066" target="_blank" rel="noopener">论文原文 ↗</a></div>
+        <div class="citation-line">Su, J.-H.; Piao, Y.-C.; Luo, Z.; Yan, B.-P. · 2018</div>
       </div>
-
-      <div class="hero-board" aria-label="研究流程概览">
-        <div class="board-head">
-          <span>研究链路 / 04 STEPS</span>
-          <span class="live-dot">EVIDENCE MAP</span>
-        </div>
-        <div class="orbit orbit-one"></div>
-        <div class="orbit orbit-two"></div>
-        <div class="route-line" aria-hidden="true">
-          <svg viewBox="0 0 560 320" role="img" aria-label="迁徙轨迹示意图">
-            <path d="M42 266 C118 230,110 138,204 164 S298 246,354 173 S456 58,523 70"/>
-            <circle cx="42" cy="266" r="6"/><circle cx="204" cy="164" r="6"/>
-            <circle cx="354" cy="173" r="6"/><circle cx="523" cy="70" r="6"/>
-          </svg>
-        </div>
-        <div class="board-node n1"><small>01</small><strong>GPS轨迹</strong><span>停留 ≠ 飞越</span></div>
-        <div class="board-node n2"><small>02</small><strong>DBIC聚类</strong><span>生成停歇地标签</span></div>
-        <div class="board-node n3"><small>03</small><strong>多模态特征</strong><span>影像 + 温度</span></div>
-        <div class="board-node n4"><small>04</small><strong>适宜性地图</strong><span>保护决策入口</span></div>
+      <div class="hero-board" aria-label="论文研究流程概览">
+        <div class="board-head"><span>PAPER LOGIC / 04 STEPS</span><span class="live-dot">QINGHAI LAKE</span></div>
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="route-line" aria-hidden="true"><svg viewBox="0 0 560 320" role="img" aria-label="迁徙轨迹示意图"><path d="M42 266 C118 230,110 138,204 164 S298 246,354 173 S456 58,523 70"/><circle cx="42" cy="266" r="6"/><circle cx="204" cy="164" r="6"/><circle cx="354" cy="173" r="6"/><circle cx="523" cy="70" r="6"/></svg></div>
+        <div class="board-node n1"><small>01</small><strong>GPS轨迹</strong><span>60,161个位置点</span></div>
+        <div class="board-node n2"><small>02</small><strong>DBIC聚类</strong><span>识别290个停歇地</span></div>
+        <div class="board-node n3"><small>03</small><strong>M-CNN</strong><span>影像 + 气温</span></div>
+        <div class="board-node n4"><small>04</small><strong>RBF-SVM</strong><span>适宜性制图</span></div>
       </div>
-
       <div class="stat-strip" aria-label="论文关键数字">
-        <article><b>29</b><span>只斑头雁<br>卫星追踪个体</span></article>
-        <article><b>60,161</b><span>个处理后<br>GPS轨迹点</span></article>
-        <article><b>290</b><span>个DBIC识别的<br>迁徙停歇地</span></article>
-        <article><b>0.864</b><span>M-CNN + SVM<br>分类准确率</span></article>
+        <article><b>29</b><span>只斑头雁<br>追踪个体</span></article><article><b>60,161</b><span>个清洗后<br>GPS位置点</span></article><article><b>27,714</b><span>个遥感<br>影像样本块</span></article><article><b>0.864</b><span>最佳模型<br>分类准确率</span></article>
       </div>
     </section>
 
-    <section class="thesis section-pad" id="overview">
-      <div class="section-kicker">00 / 一句话看懂</div>
-      <div class="thesis-grid">
-        <h2>论文真正的贡献不是“用了CNN”，而是把<span>动物行为数据变成了遥感模型的监督标签</span>。</h2>
-        <div class="thesis-note">
-          <p>普通遥感分类先有人定义“水体、草地、建筑”；这篇论文则先从鸟类轨迹识别停歇地，再让模型学习“鸟会选择怎样的环境”。</p>
-          <p class="boundary"><b>输出边界：</b>它预测的是影像块层面的潜在适宜性，不等同于繁殖成功率、种群数量或完整生态质量。</p>
-        </div>
+    <section class="paper-summary section-pad" id="abstract">
+      <div class="section-kicker">00 / 论文身份</div>
+      <div class="paper-summary-grid">
+        <div><h2>Modeling Habitat Suitability of Migratory Birds from Remote Sensing Images Using Convolutional Neural Networks</h2><p class="paper-subtitle">利用卷积神经网络和遥感影像模拟迁徙鸟类栖息地适宜性</p></div>
+        <dl class="paper-meta">
+          <div><dt>研究对象</dt><dd>斑头雁（Bar-headed goose）</dd></div><div><dt>研究区域</dt><dd>青海湖及其迁徙路线</dd></div><div><dt>任务类型</dt><dd>影像块二分类 / 栖息地适宜性制图</dd></div><div><dt>数据模态</dt><dd>GPS轨迹 + Landsat + 气温</dd></div><div><dt>核心方法</dt><dd>DBIC + M-CNN + RBF-SVM</dd></div><div><dt>主要结论</dt><dd>多模态特征优于单一遥感特征</dd></div>
+        </dl>
       </div>
+      <div class="one-sentence"><span>一句话概括</span><p>作者先从鸟类轨迹中自动找出停歇地，再把停歇地转成遥感样本标签，最后让模型学习“被鸟使用的地表环境长什么样”。</p></div>
+    </section>
+
+    <section class="question section-pad" id="question">
+      <div class="section-heading"><div><div class="section-kicker">01 / 研究背景与问题</div><h2>难点不只在模型，首先在“什么算栖息地”。</h2></div><p>传统物种分布模型需要可靠的物种出现记录；迁徙轨迹虽然数量庞大，却混合了飞越、迁移、短暂停留和长期利用。</p></div>
+      <div class="problem-grid">
+        <article><span>问题 A</span><h3>轨迹点不能直接当标签</h3><p>鸟从某地飞过，只能说明它经过；只有明显停留，才更可能对应休息、觅食、换羽或繁殖等栖息地利用。</p></article>
+        <article><span>问题 B</span><h3>单一影像缺少时间环境</h3><p>相似的水体和植被，在不同季节与温度条件下可能具有不同适宜性；只看空间纹理不足以解释迁徙鸟类选择。</p></article>
+        <article><span>问题 C</span><h3>深度模型面临小样本</h3><p>生态追踪数据的独立个体通常很少，而通用预训练网络输入尺寸大、参数多，不一定适合16×16像元的小型遥感切片。</p></article>
+      </div>
+      <div class="research-questions"><div><small>RQ 01</small><b>怎样从不规则GPS轨迹中识别真正的停歇地？</b></div><div><small>RQ 02</small><b>怎样把停歇地自动转化为遥感分类样本？</b></div><div><small>RQ 03</small><b>怎样联合地表空间信息与气温时间信息？</b></div></div>
+    </section>
+
+    <section class="data-section section-pad" id="data">
+      <div class="section-heading compact"><div><div class="section-kicker">02 / 数据、样本与标签</div><h2>三类原始数据，最终汇合到一个影像块。</h2></div><p>每个训练样本由“一个空间影像块 + 一段气温序列 + 一个停歇地标签”组成。</p></div>
+      <div class="data-grid">
+        <article class="data-card gps"><span class="data-icon">⌁</span><small>BEHAVIOR</small><h3>鸟类GPS轨迹</h3><p>29只斑头雁的卫星追踪记录，经异常值处理后保留60,161个位置点。</p><ul><li>字段：经纬度、时间、个体编号</li><li>采样间隔：数小时至约10天</li><li>用途：识别停歇地并生成标签</li></ul></article>
+        <article class="data-card raster"><span class="data-icon">▦</span><small>SPACE</small><h3>Landsat 5 TM</h3><p>为每个停歇地寻找时间最接近且空间相交的影像，描述地表光谱与纹理。</p><ul><li>波段：1、2、3、4、5、7</li><li>筛选：云量不高于20%</li><li>切片：16 × 16像元，约480米见方</li></ul></article>
+        <article class="data-card climate"><span class="data-icon">≈</span><small>TIME</small><h3>逐日气温</h3><p>从11个气象站选择最近站点，获取影像日期前后各7天的气温。</p><ul><li>序列长度：15天</li><li>变量：逐日平均气温</li><li>用途：补充短期环境条件</li></ul></article>
+      </div>
+      <div class="sample-table-wrap"><table class="sample-table"><caption>训练样本构成与类别平衡</caption><thead><tr><th>项目</th><th>数量</th><th>作者的处理</th><th>分析时要注意</th></tr></thead><tbody>
+        <tr><td>原始影像块样本</td><td>27,714</td><td>按是否与停歇地重叠生成标签</td><td>不重叠不一定代表真正不适宜</td></tr><tr><td>正样本</td><td>8,696</td><td>与DBIC停歇地重叠</td><td>多个样本可能来自同一个体或同一停歇地</td></tr><tr><td>负样本</td><td>19,018</td><td>未与停歇地重叠</td><td>可能混入未被追踪个体使用的潜在栖息地</td></tr><tr><td>新增正样本</td><td>6,065</td><td>通过影像旋转或翻转进行数据增强</td><td>增强样本不等于新增独立生态观测</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="dbic section-pad" id="dbic">
+      <div class="section-heading light"><div><div class="section-kicker">03 / DBIC算法精读</div><h2>它不是简单数点，<br>而是衡量每个点受到多少“邻近影响”。</h2></div><p>DBIC由DBSCAN改造而来，专门处理不同个体、不同频率的时空轨迹。</p></div>
+      <div class="dbic-grid">
+        <article class="formula-card"><small>01 / 高斯影响函数</small><div class="equation">f(x,y) = exp[−d(x,y)² / 2σ²]</div><p>两个点越近，影响越强；距离增大后影响按高斯函数衰减。相比“落在邻域内就记1”，它保留了距离差异。</p></article>
+        <article class="formula-card"><small>02 / 轨迹密度</small><div class="equation">f<sup>Traj</sup>(p) = Σ f(xᵢ,p)</div><p>只统计同一只鸟在时间邻域 ξ<sub>t</sub> 内的点。某只鸟在一个区域连续出现，轨迹密度就高。</p></article>
+        <article class="formula-card"><small>03 / 全局密度</small><div class="equation">f<sup>Global</sup>(p) = Σ f(xᵢ,p)</div><p>统计其他轨迹在空间邻域 ξ<sub>d</sub> 内的点。多个个体聚集在同一区域，全局密度就高。</p></article>
+        <article class="formula-card accent"><small>04 / 综合密度</small><div class="equation">f(p) = f<sup>Traj</sup>(p) + α · f<sup>Global</sup>(p)</div><p>α控制群体聚集信息的权重。超过密度条件的核心点与相邻点被聚成停歇地。</p></article>
+      </div>
+      <div class="dbic-reading"><div><span>普通DBSCAN</span><p>主要根据固定空间半径内的点数判断密度，不区分点来自哪个个体，也较难表达不规则采样。</p></div><div><span>DBIC增加的生态含义</span><p>既看一只鸟是否持续停留，也看不同鸟是否共同选择该区域，更符合斑头雁群居和集群活动特征。</p></div><div><span>算法输出</span><p>论文从清洗后的轨迹中识别约290个停歇地，分布在青海湖、哈拉湖、拉萨河和雅鲁藏布江等区域。</p></div></div>
     </section>
 
     <section class="method section-pad" id="method">
-      <div class="section-heading">
-        <div>
-          <div class="section-kicker">01 / 他们怎么做</div>
-          <h2>四步完成从轨迹到地图的转换。</h2>
-        </div>
-        <p>点击步骤，查看数据、处理方式、直接输出及关键判断。</p>
-      </div>
-
+      <div class="section-heading"><div><div class="section-kicker">04 / 完整方法链</div><h2>先制造可靠标签，再进行多模态特征学习。</h2></div><p>点击四个步骤，理解每一步的输入、方法、输出及其在证据链中的作用。</p></div>
       <div class="method-layout">
-        <div class="method-tabs" role="tablist" aria-label="论文方法步骤">
-          <button class="method-tab active" data-step="0" role="tab" aria-selected="true"><span>01</span><b>识别停歇地</b><small>GPS → DBIC</small></button>
-          <button class="method-tab" data-step="1" role="tab" aria-selected="false"><span>02</span><b>构造训练样本</b><small>停歇地 → 影像块</small></button>
-          <button class="method-tab" data-step="2" role="tab" aria-selected="false"><span>03</span><b>融合两类特征</b><small>2D + 1D CNN</small></button>
-          <button class="method-tab" data-step="3" role="tab" aria-selected="false"><span>04</span><b>分类并制图</b><small>特征 → RBF-SVM</small></button>
-        </div>
-
-        <article class="method-detail" id="methodDetail" aria-live="polite">
-          <div class="detail-index">STEP 01</div>
-          <h3>识别真正的停留行为，而不是把所有GPS点都当成栖息地。</h3>
-          <div class="detail-columns">
-            <div><small>输入</small><p>时间戳、经纬度、个体编号组成的斑头雁轨迹。</p></div>
-            <div><small>方法</small><p>DBIC同时计算同一轨迹的时间密度，以及不同个体在邻域内的全局密度。</p></div>
-            <div><small>输出</small><p>从60,161个轨迹点中识别约290个停歇区域。</p></div>
-          </div>
-          <div class="detail-insight"><span>为什么重要</span><p>飞越某地不能证明该地适宜；停留行为更接近觅食、休息、换羽或繁殖等实际利用。</p></div>
-        </article>
+        <div class="method-tabs" role="tablist" aria-label="论文方法步骤"><button class="method-tab active" data-step="0" role="tab" aria-selected="true"><span>01</span><b>识别停歇地</b><small>GPS → DBIC</small></button><button class="method-tab" data-step="1" role="tab" aria-selected="false"><span>02</span><b>构造训练样本</b><small>停歇地 → 影像块</small></button><button class="method-tab" data-step="2" role="tab" aria-selected="false"><span>03</span><b>融合两类特征</b><small>2D + 1D CNN</small></button><button class="method-tab" data-step="3" role="tab" aria-selected="false"><span>04</span><b>分类并制图</b><small>特征 → RBF-SVM</small></button></div>
+        <article class="method-detail" id="methodDetail" aria-live="polite"><div class="detail-index">STEP 01</div><h3>识别真正的停留行为，而不是把所有GPS点都当成栖息地。</h3><div class="detail-columns"><div><small>输入</small><p>时间戳、经纬度、个体编号组成的斑头雁轨迹。</p></div><div><small>方法</small><p>DBIC同时计算同一轨迹的时间密度，以及不同个体在邻域内的全局密度。</p></div><div><small>输出</small><p>从60,161个轨迹点中识别约290个停歇区域。</p></div></div><div class="detail-insight"><span>为什么重要</span><p>飞越某地不能证明该地适宜；停留行为更接近觅食、休息、换羽或繁殖等实际利用。</p></div></article>
       </div>
+      <div class="architecture">
+        <div class="arch-source image-source"><small>空间输入</small><b>16 × 16 × 6</b><span>Landsat影像块</span></div><div class="arch-arrow">→</div><div class="arch-model"><small>2D分支</small><b>多尺度卷积</b><span>提取水体、植被、岸线与纹理</span></div><div class="arch-fusion" aria-hidden="true">+</div><div class="arch-source temp-source"><small>时间输入</small><b>15 × 1</b><span>逐日平均气温</span></div><div class="arch-arrow">→</div><div class="arch-model"><small>1D分支</small><b>一维卷积</b><span>提取升温、降温与短期变化</span></div><div class="arch-arrow final">→</div><div class="arch-output"><small>融合特征</small><b>512维</b><span>SoftMax训练 / RBF-SVM分类</span></div>
+      </div>
+      <div class="architecture-notes"><article><b>为什么不直接使用大型预训练网络？</b><p>AlexNet、VGG、GoogLeNet通常要求约224×224输入；强行放大16×16影像会制造插值而非新增信息。作者因此设计更浅、更适合小切片的网络。</p></article><article><b>M-CNN在本文里做了什么？</b><p>它以多个卷积分支处理两种输入：二维卷积学习影像的空间特征，一维卷积学习温度序列，同时借鉴Inception的多尺度卷积思想。</p></article><article><b>为什么CNN后面再接SVM？</b><p>CNN先学习非线性表征；作者再把全连接层的512维特征交给RBF-SVM，希望在有限样本下获得更清晰的分类边界。</p></article></div>
     </section>
 
-    <section class="data-section section-pad">
-      <div class="section-heading compact">
-        <div><div class="section-kicker">DATA / 三类输入</div><h2>空间、时间与行为被放在同一张样本表里。</h2></div>
+    <section class="experiment section-pad" id="experiment">
+      <div class="section-heading"><div><div class="section-kicker">05 / 实验设计</div><h2>六种方法、四种划分比例、五类指标。</h2></div><p>论文既比较手工纹理与深度特征，也比较CNN自身分类和“CNN特征 + SVM”。</p></div>
+      <div class="experiment-grid">
+        <div class="baseline-list"><div><span>01</span><b>GLCM + SVM</b><p>灰度共生矩阵提取手工纹理，SVM分类。</p></div><div><span>02</span><b>DenseNet</b><p>简化为3个Dense Block，以适应小型输入。</p></div><div><span>03</span><b>CNN</b><p>只输入遥感影像，不使用温度。</p></div><div><span>04</span><b>CNN + SVM</b><p>普通CNN提取特征，再由SVM分类。</p></div><div><span>05</span><b>M-CNN</b><p>影像和温度联合输入，SoftMax分类。</p></div><div><span>06</span><b>M-CNN + SVM</b><p>融合特征交给RBF-SVM，论文主方法。</p></div></div>
+        <div class="split-panel"><h3>四次训练 / 验证 / 测试划分</h3><div class="split-row"><b>70</b><span class="train" style="width:70%">训练</span><span class="valid" style="width:5%">5</span><span class="test" style="width:25%">测试25</span></div><div class="split-row"><b>70</b><span class="train" style="width:70%">训练</span><span class="valid" style="width:10%">验证10</span><span class="test" style="width:20%">测试20</span></div><div class="split-row"><b>70</b><span class="train" style="width:70%">训练</span><span class="valid" style="width:15%">验证15</span><span class="test" style="width:15%">测试15</span></div><div class="split-row"><b>70</b><span class="train" style="width:70%">训练</span><span class="valid" style="width:20%">验证20</span><span class="test" style="width:10%">测试10</span></div><p>训练集始终为70%；作者报告四次实验的均值与标准差。M-CNN + SVM使用训练集训练M-CNN、验证集训练SVM。</p><div class="metric-tags"><span>Accuracy</span><span>F1</span><span>AUC</span><span>Precision</span><span>Recall</span></div></div>
       </div>
-      <div class="data-grid">
-        <article class="data-card gps"><span class="data-icon">⌁</span><small>BEHAVIOR</small><h3>鸟类GPS轨迹</h3><p>确定哪些位置被鸟类实际使用，并通过聚类识别停歇地。</p><ul><li>29只斑头雁</li><li>采样间隔数小时至数天</li><li>存在丢点与频率不一致</li></ul></article>
-        <article class="data-card raster"><span class="data-icon">▦</span><small>SPACE</small><h3>Landsat 5 TM</h3><p>使用1、2、3、4、5、7波段描述地表覆盖与空间纹理。</p><ul><li>云量不高于20%</li><li>16 × 16像元切片</li><li>单块约480 × 480米</li></ul></article>
-        <article class="data-card climate"><span class="data-icon">≈</span><small>TIME</small><h3>15天气温序列</h3><p>取影像日期前后各7天，用最近气象站补充短期环境条件。</p><ul><li>11个气象站</li><li>逐日平均气温</li><li>1D卷积提取时间特征</li></ul></article>
-      </div>
+      <div class="experiment-warning"><b>关键方法学问题</b><p>论文描述的是随机划分，而非按鸟类个体、年份或空间区域分组。即使训练与测试影像块不同，它们仍可能来自相邻位置、同一景影像或同一只鸟，产生空间和个体层面的信息泄漏。</p></div>
     </section>
 
     <section class="evidence section-pad" id="evidence">
-      <div class="section-heading">
-        <div><div class="section-kicker">02 / 结果怎么看</div><h2>最优模型并非每个指标都第一。</h2></div>
-        <p>切换指标比较六种基线。柱长为论文报告的均值。</p>
-      </div>
-      <div class="evidence-grid">
-        <div class="chart-card">
-          <div class="metric-switch" role="group" aria-label="模型指标切换">
-            <button class="active" data-metric="accuracy">Accuracy</button>
-            <button data-metric="f1">F1</button>
-            <button data-metric="auc">AUC</button>
-            <button data-metric="precision">Precision</button>
-            <button data-metric="recall">Recall</button>
-          </div>
-          <div id="modelChart" class="model-chart" aria-live="polite"></div>
-          <p class="chart-note">指标来自论文表4；误差线未在此简化图中展开。</p>
-        </div>
-        <aside class="finding-stack">
-          <article><span>分类表现</span><b>M-CNN + SVM</b><p>Accuracy 0.864、F1 0.842、Precision 0.852，为三项最高。</p></article>
-          <article><span>检出能力</span><b>M-CNN</b><p>AUC 0.936、Recall 0.938，优于最后叠加SVM的版本。</p></article>
-          <article class="caution"><span>不能过度解读</span><b>随机划分 ≠ 外部验证</b><p>相邻影像块、同一个体和同一时期的数据可能同时进入训练集与测试集。</p></article>
-        </aside>
-      </div>
+      <div class="section-heading"><div><div class="section-kicker">06 / 定量结果</div><h2>多模态有效，但“最佳”取决于看哪个指标。</h2></div><p>切换指标比较六种模型。橙色表示该指标最高值。</p></div>
+      <div class="evidence-grid"><div class="chart-card"><div class="metric-switch" role="group" aria-label="模型指标切换"><button class="active" data-metric="accuracy">Accuracy</button><button data-metric="f1">F1</button><button data-metric="auc">AUC</button><button data-metric="precision">Precision</button><button data-metric="recall">Recall</button></div><div id="modelChart" class="model-chart" aria-live="polite"></div><p class="chart-note">数值来自论文表4。交互图显示均值，完整均值±标准差见下表。</p></div><aside class="finding-stack"><article><span>综合分类表现</span><b>M-CNN + SVM</b><p>Accuracy 0.864、F1 0.842、Precision 0.852均为最高。</p></article><article><span>检出能力</span><b>M-CNN</b><p>AUC 0.936、Recall 0.938最高，说明SVM并没有改善全部指标。</p></article><article class="caution"><span>提升来自哪里</span><b>温度 + 深度特征 + 分类器</b><p>M-CNN优于普通CNN，说明加入气温有增益；两类CNN接SVM后准确率均提高。</p></article></aside></div>
+      <div class="results-table-wrap"><table class="results-table"><thead><tr><th>方法</th><th>Accuracy</th><th>F1</th><th>AUC</th><th>Precision</th><th>Recall</th></tr></thead><tbody>
+        <tr><td>GLCM + SVM</td><td>0.769 ± 0.004</td><td>0.731 ± 0.005</td><td>0.839 ± 0.004</td><td>0.742 ± 0.005</td><td>0.719 ± 0.006</td></tr><tr><td>DenseNet</td><td>0.781 ± 0.023</td><td>0.768 ± 0.008</td><td>0.870 ± 0.008</td><td>0.713 ± 0.045</td><td>0.840 ± 0.060</td></tr><tr><td>CNN</td><td>0.803 ± 0.004</td><td>0.758 ± 0.018</td><td>0.880 ± 0.013</td><td>0.814 ± 0.038</td><td>0.715 ± 0.066</td></tr><tr><td>CNN + SVM</td><td>0.817 ± 0.008</td><td>0.780 ± 0.010</td><td>0.879 ± 0.011</td><td>0.817 ± 0.018</td><td>0.746 ± 0.016</td></tr><tr><td>M-CNN</td><td>0.835 ± 0.019</td><td>0.830 ± 0.021</td><td class="best-cell">0.936 ± 0.020</td><td>0.746 ± 0.027</td><td class="best-cell">0.938 ± 0.041</td></tr><tr class="primary-row"><td>M-CNN + SVM</td><td class="best-cell">0.864 ± 0.022</td><td class="best-cell">0.842 ± 0.029</td><td>0.928 ± 0.015</td><td class="best-cell">0.852 ± 0.017</td><td>0.832 ± 0.044</td></tr>
+      </tbody></table></div>
     </section>
 
-    <section class="bridge section-pad" id="translate">
-      <div class="section-heading light">
-        <div><div class="section-kicker">03 / 我能用到什么</div><h2>不要替换你已有的模型，<br>要在它后面接上生态响应。</h2></div>
-        <p>你现有项目已经回答“湖和湿地怎么变”；下一步是回答“鸟类栖息地因此怎么变”。</p>
-      </div>
-
-      <div class="bridge-flow" aria-label="项目扩展证据链">
-        <div><small>已有成果 A</small><b>8期湿地分类</b><span>1990—2024</span></div><i>+</i>
-        <div><small>已有成果 B</small><b>未来湖面预测</b><span>SSP情景</span></div><i>→</i>
-        <div class="focus"><small>新增模型</small><b>水鸟适宜性</b><span>行为 × 遥感 × 水文</span></div><i>→</i>
-        <div><small>决策输出</small><b>保护优先级</b><span>核心区 / 风险区</span></div>
-      </div>
-
-      <div class="translation-grid">
-        <article>
-          <span class="mapping-no">01</span><h3>可直接继承</h3>
-          <p>已有湿地范围、湖岸线、水位、面积、气候情景和未来淹没边界，可直接变成栖息地模型的环境变量。</p>
-          <div class="tag-row"><span>湿地类型</span><span>距水距离</span><span>斑块连通性</span><span>未来岸线</span></div>
-        </article>
-        <article>
-          <span class="mapping-no">02</span><h3>需要新增</h3>
-          <p>鸟类GPS、同步监测点或样线调查数据，用来构建存在标签，并区分觅食、繁殖、换羽与迁徙停歇。</p>
-          <div class="tag-row"><span>个体ID</span><span>时间戳</span><span>行为阶段</span><span>调查努力</span></div>
-        </article>
-        <article>
-          <span class="mapping-no">03</span><h3>最终回答</h3>
-          <p>湖面扩大究竟增加了开阔水面，还是淹没了更稀缺的浅水、泥滩、河口和湖滨草甸。</p>
-          <div class="tag-row"><span>稳定核心区</span><span>损失区</span><span>增益区</span><span>生态廊道</span></div>
-        </article>
-      </div>
-
-      <div class="report-evidence">
-        <figure>
-          <img src="assets/page-61.webp" alt="项目报告中1990年以来青海湖流域湿地面积变化图" loading="lazy">
-          <figcaption><b>现有证据：湿地变化</b><span>项目报告图21 · 湿地面积与破碎化</span></figcaption>
-        </figure>
-        <figure>
-          <img src="assets/page-75.webp" alt="项目报告中不同未来水位下居民点暴露分布图" loading="lazy">
-          <figcaption><b>现有证据：未来湖面</b><span>项目报告图28 · 可复用于栖息地情景</span></figcaption>
-        </figure>
-        <div class="report-callout">
-          <span>新的科学问题</span>
-          <blockquote>水域面积增加，是否意味着水鸟适宜栖息地也同步增加？</blockquote>
-          <p>这不是必然关系。深水水面可能扩张，但浅水觅食区、泥滩、河口与湖滨繁殖地可能同时收缩。</p>
-          <a href="assets/report.pdf#page=60" target="_blank" rel="noopener">核对项目报告 ↗</a>
-        </div>
-      </div>
+    <section class="spatial-results section-pad" id="maps">
+      <div class="section-heading"><div><div class="section-kicker">07 / 空间结果怎么读</div><h2>作者不只看分数，还检查地图是否符合斑头雁生态常识。</h2></div><p>论文分别对2010年8月和2011年2月的青海湖区域进行预测，用季节差异检验空间结果是否合理。</p></div>
+      <div class="season-grid"><article class="season-card summer"><div class="season-head"><span>AUG 2010</span><b>夏季 / 繁殖后期与换羽期</b></div><h3>高适宜区集中于青海湖西北部、河口与湖岸湿地区域。</h3><ul><li>M-CNN + SVM预测的东南部和东北部“极高适宜区”较少，与已有分布图更一致。</li><li>湖泊水面大多被判为很低适宜，区别于部分基线模型对水面的高估。</li><li>DenseNet、CNN + SVM和M-CNN在部分区域可能高估“极高”面积。</li></ul></article><article class="season-card winter"><div class="season-head"><span>FEB 2011</span><b>冬季 / 非主要越冬地</b></div><h3>多数模型把青海湖周边判为较低适宜，与物种季节习性相符。</h3><ul><li>除GLCM + SVM和DenseNet外，多数模型给出相近的低适宜格局。</li><li>作者认为模型学到了季节差异，但冰雪覆盖也可能显著改变影像外观。</li><li>因此“冬季低适宜”同时包含生态信号与遥感域变化，二者没有被严格分离。</li></ul></article></div>
+      <div class="interpretation-line"><div><small>模型直接输出</small><b>影像块属于正类的分类结果</b></div><i>≠</i><div><small>不能直接声称</small><b>鸟类数量、繁殖成功率或栖息地承载力</b></div></div>
     </section>
 
-    <section class="plan section-pad" id="plan">
-      <div class="section-heading">
-        <div><div class="section-kicker">04 / 怎么用</div><h2>先按你拥有的鸟类数据，选择实施路线。</h2></div>
-        <p>数据条件决定方法，不要为了“深度学习”跳过标签质量和独立验证。</p>
-      </div>
-
-      <div class="route-picker">
-        <div class="picker-buttons" role="tablist" aria-label="数据条件选择">
-          <button class="route-option active" data-route="gps" aria-selected="true"><small>路线 A</small><b>有GPS轨迹</b><span>最接近论文，可做行为识别</span></button>
-          <button class="route-option" data-route="survey" aria-selected="false"><small>路线 B</small><b>只有监测点</b><span>适合比赛阶段快速落地</span></button>
-          <button class="route-option" data-route="none" aria-selected="false"><small>路线 C</small><b>暂无鸟类数据</b><span>先建设最小可用调查集</span></button>
-        </div>
-        <div class="route-result" id="routeResult" aria-live="polite">
-          <div><small>推荐标签</small><b>DBIC停歇地 + 行为阶段</b></div>
-          <div><small>推荐模型</small><b>RF基线 → 多分支CNN</b></div>
-          <div><small>验证方式</small><b>按个体、年份和空间分块</b></div>
-          <p>先复现论文的“停歇地识别—影像块分类”，再加入水位、湿地格局和人类干扰变量。测试集必须保留完整个体或完整年份，避免随机切分带来的数据泄漏。</p>
-        </div>
-      </div>
-
-      <div class="workpackages">
-        <article><span>WP 01</span><h3>标签工程</h3><p>轨迹清洗、停歇地识别、活动阶段划分；同步记录个体、时间、地点和调查努力。</p><b>输出：可追溯样本表</b></article>
-        <article><span>WP 02</span><h3>环境数据立方体</h3><p>按样本时间匹配遥感、水位、气象、地形、湿地格局和人类干扰变量。</p><b>输出：时空特征栈</b></article>
-        <article><span>WP 03</span><h3>模型与验证</h3><p>先做RF/XGBoost/MaxEnt基线，再评估多模态CNN是否带来稳定增益。</p><b>输出：独立测试指标</b></article>
-        <article><span>WP 04</span><h3>未来情景耦合</h3><p>更新未来岸线、水深、湿地类型和气候变量，逐情景重新计算适宜性。</p><b>输出：增益—损失地图</b></article>
-        <article><span>WP 05</span><h3>保护决策</h3><p>叠加自然保护地、道路和居民点，识别稳定核心区、冲突区和恢复优先区。</p><b>输出：分区行动清单</b></article>
-      </div>
-    </section>
-
-    <section class="innovation section-pad" id="limits">
-      <div class="section-heading">
-        <div><div class="section-kicker">05 / 不足与创新</div><h2>每个创新，都应当对应一个可信度缺口。</h2></div>
-        <p>点击展开：先看论文限制，再看你的改进动作。</p>
-      </div>
+    <section class="critique section-pad" id="critique">
+      <div class="section-heading light"><div><div class="section-kicker">08 / 贡献与批判性分析</div><h2>论文的价值在方法链，<br>薄弱处也在方法链。</h2></div><p>应同时区分“作者明确承认的未来工作”和“根据实验设计可以进一步识别的限制”。</p></div>
+      <div class="contribution-grid"><article><span>贡献 01</span><h3>把移动数据变成监督标签</h3><p>减少完全依赖人工标注或少量调查点的问题，为动物追踪数据与遥感结合提供可复用范式。</p></article><article><span>贡献 02</span><h3>融合空间与时间模态</h3><p>二维卷积处理地表空间结构，一维卷积处理温度序列，比仅使用遥感影像取得更好表现。</p></article><article><span>贡献 03</span><h3>为小型遥感切片定制网络</h3><p>避免把16×16影像强行放大到通用图像网络输入尺寸，强调模型结构应服从数据尺度。</p></article></div>
       <div class="risk-list">
-        <details open>
-          <summary><span>01</span><b>随机样本划分造成时空泄漏</b><i>验证创新</i></summary>
-          <div><p><strong>论文不足：</strong>相邻影像块、同一个体或同一时期的数据可能同时进入训练集和测试集，指标可能偏高。</p><p><strong>你的改进：</strong>采用按个体留一、按年份留一、空间分块三套验证；最后保留一批独立现场调查点作为外部测试。</p></div>
-        </details>
-        <details>
-          <summary><span>02</span><b>“停留过”不等于完整的栖息地质量</b><i>标签创新</i></summary>
-          <div><p><strong>论文不足：</strong>停歇点不能直接代表繁殖成功、食物充足或长期种群维持。</p><p><strong>你的改进：</strong>把标签细分为觅食、繁殖、换羽、夜栖和迁徙停歇；若暂时无法细分，应明确输出为“利用概率”而非“生态质量”。</p></div>
-        </details>
-        <details>
-          <summary><span>03</span><b>单景Landsat与单一窗口尺度过粗</b><i>尺度创新</i></summary>
-          <div><p><strong>论文不足：</strong>约480米影像块容易混合浅水、泥滩、草甸、道路和居民点，也忽略物候变化。</p><p><strong>你的改进：</strong>采用小、中、大三种窗口，同时加入季节性NDVI/NDWI、水位和冰期序列，分别描述微生境与景观连通性。</p></div>
-        </details>
-        <details>
-          <summary><span>04</span><b>缺少未来环境变化与不确定性</b><i>情景创新</i></summary>
-          <div><p><strong>论文不足：</strong>主要识别历史或当前适宜区，没有回答未来岸线变化后栖息地是否保留。</p><p><strong>你的改进：</strong>把现有SSP水量—水位—面积预测接入栖息地模型，并同时输出多模型分歧、置信区间和稳定核心区。</p></div>
-        </details>
+        <details open><summary><span>01</span><b>29只鸟限制了个体代表性</b><i>样本偏差</i></summary><div><p><strong>问题：</strong>60,161个点看似很多，但统计独立性主要来自29个个体。年龄、性别、繁殖状态和佩戴装置个体可能不代表全部种群。</p><p><strong>影响：</strong>模型可能学习被追踪个体的路线偏好，而不是整个物种的普遍栖息地需求。</p></div></details>
+        <details><summary><span>02</span><b>正负标签存在定义误差</b><i>标签偏差</i></summary><div><p><strong>问题：</strong>停歇地重叠被当作正类，不重叠被当作负类；但“没被访问”不等于“不适宜”。</p><p><strong>影响：</strong>潜在适宜区可能被错误当成负样本，分类边界会受追踪覆盖范围影响。</p></div></details>
+        <details><summary><span>03</span><b>随机划分可能夸大泛化能力</b><i>数据泄漏</i></summary><div><p><strong>问题：</strong>没有明确按个体、年份、停歇地或空间块隔离训练与测试。</p><p><strong>影响：</strong>0.864准确率主要说明对同类数据的区分能力，不能证明对新个体、新年份或新地区同样有效。</p></div></details>
+        <details><summary><span>04</span><b>环境变量与生态过程过于简化</b><i>机制缺口</i></summary><div><p><strong>问题：</strong>模型主要使用六个Landsat波段和温度，缺少水深、植被物候、食物、道路干扰、地形及捕食风险。</p><p><strong>影响：</strong>模型更接近“影像外观相似性”，难以解释真正驱动斑头雁选择的生态机制。</p></div></details>
+        <details><summary><span>05</span><b>缺少同步独立野外验证</b><i>证据边界</i></summary><div><p><strong>问题：</strong>空间结果主要与已有分布认识进行定性比较，而不是用独立同期鸟类调查验证。</p><p><strong>影响：</strong>地图“看起来合理”是一种支持证据，但弱于严格的外部样本评价。</p></div></details>
+        <details><summary><span>06</span><b>云、冰雪和时间匹配仍是瓶颈</b><i>域变化</i></summary><div><p><strong>问题：</strong>高云量影像被移除；最近时相影像未必与停歇行为同步；冬季冰雪会改变光谱外观。</p><p><strong>影响：</strong>模型可能把成像条件差异误认为栖息地差异。作者也把更好处理高云量影像列为未来工作。</p></div></details>
       </div>
     </section>
 
-    <section class="deliverables section-pad">
-      <div class="deliverable-copy">
-        <div class="section-kicker">FINAL / 项目应该交付什么</div>
-        <h2>四张地图，比一个“高准确率”更接近管理需求。</h2>
-        <p>最终叙事从模型性能落到空间行动：哪里稳定、哪里正在丧失、哪里可能新增、哪里需要优先保护。</p>
-      </div>
-      <ol class="map-list">
-        <li><span>MAP 01</span><b>当前栖息地适宜性</b><small>连续概率 + 不确定性</small></li>
-        <li><span>MAP 02</span><b>历史变化归因</b><small>湿地 / 水位 / 人类干扰</small></li>
-        <li><span>MAP 03</span><b>未来增益—损失</b><small>2035 / 2050 / 2070 / 2100</small></li>
-        <li><span>MAP 04</span><b>保护优先级</b><small>核心区 / 廊道 / 恢复区</small></li>
-      </ol>
+    <section class="application section-pad" id="application">
+      <div class="section-heading"><div><div class="section-kicker">09 / 对你的项目有什么用</div><h2>最后再谈迁移：借方法框架，不照搬模型结构。</h2></div><p>你现有项目已有湿地分类和未来湖面预测；这篇论文可以帮助补上“生态响应”环节。</p></div>
+      <div class="application-flow"><div><small>现有输入</small><b>湿地 / 岸线 / 水位情景</b></div><i>+</i><div><small>新增数据</small><b>鸟类轨迹或监测记录</b></div><i>→</i><div class="focus"><small>借鉴论文</small><b>行为标签 + 多模态模型</b></div><i>→</i><div><small>新增输出</small><b>未来栖息地增益与损失</b></div></div>
+      <div class="route-picker"><div class="picker-buttons" role="tablist" aria-label="数据条件选择"><button class="route-option active" data-route="gps" aria-selected="true"><small>路线 A</small><b>有GPS轨迹</b><span>可以复现并改进DBIC路线</span></button><button class="route-option" data-route="survey" aria-selected="false"><small>路线 B</small><b>只有监测点</b><span>先做可解释的基线模型</span></button><button class="route-option" data-route="none" aria-selected="false"><small>路线 C</small><b>暂无鸟类数据</b><span>先建设分层调查样本</span></button></div><div class="route-result" id="routeResult" aria-live="polite"><div><small>推荐标签</small><b>DBIC停歇地 + 行为阶段</b></div><div><small>推荐模型</small><b>RF基线 → 多分支CNN</b></div><div><small>验证方式</small><b>按个体、年份和空间分块</b></div><p>复现“停歇地识别—影像块分类”后，加入水位、湿地格局和人类干扰。最终把未来湖岸线输入模型，比较稳定、损失与新增适宜区。</p></div></div>
+      <div class="application-principle"><b>最值得形成的创新问题</b><p>湖面面积增加是否真的扩大了水鸟栖息地，还是同时淹没了更稀缺的浅水、泥滩、河口和湖滨草甸？</p></div>
     </section>
 
     <section class="sources section-pad" id="sources">
-      <div class="section-kicker">SOURCES / 证据与边界</div>
-      <div class="source-grid">
-        <article><span>论文</span><h3>Modeling Habitat Suitability of Migratory Birds from Remote Sensing Images Using Convolutional Neural Networks</h3><p>Su, J.-H.; Piao, Y.-C.; Luo, Z.; Yan, B.-P. <em>Animals</em> 2018, 8, 66.</p><a href="https://doi.org/10.3390/ani8050066" target="_blank" rel="noopener">DOI 10.3390/ani8050066 ↗</a></article>
-        <article><span>项目底稿</span><h3>青海湖高原湖泊湿地演变趋势及应对措施</h3><p>本站的项目迁移建议建立在现有湿地分类、未来水量和湖岸暴露分析基础上。</p><a href="assets/report.pdf" target="_blank" rel="noopener">打开项目报告 ↗</a></article>
-        <article><span>解释原则</span><h3>模型输出不是生态事实本身</h3><p>适宜性、利用概率、种群数量和繁殖成功率是不同概念；网站明确区分论文结果、项目已有结果和新增研究建议。</p></article>
-      </div>
+      <div class="section-kicker">SOURCES / 阅读依据</div>
+      <div class="source-grid"><article><span>论文原文</span><h3>Modeling Habitat Suitability of Migratory Birds from Remote Sensing Images Using Convolutional Neural Networks</h3><p>Su, J.-H.; Piao, Y.-C.; Luo, Z.; Yan, B.-P. <em>Animals</em> 2018, 8, 66.</p><a href="https://doi.org/10.3390/ani8050066" target="_blank" rel="noopener">DOI 10.3390/ani8050066 ↗</a></article><article><span>项目底稿</span><h3>青海湖高原湖泊湿地演变趋势及应对措施</h3><p>仅用于最后一章的方法迁移；论文解读与项目报告结果在网站中分开呈现。</p><a href="assets/report.pdf" target="_blank" rel="noopener">打开项目报告 ↗</a></article><article><span>解释边界</span><h3>原文事实、分析判断与迁移建议分层表达</h3><p>样本数量、模型结构和指标来自原文；对数据泄漏、伪负样本与泛化能力的评价属于批判性方法分析。</p></article></div>
     </section>
   </main>
-
-  <footer>
-    <div><b>迁徙栖息地研究档案 066</b><span>论文方法 × 青海湖项目转化</span></div>
-    <div><a href="#top">返回顶部 ↑</a><a href="index.html">进入原项目图谱 →</a></div>
-  </footer>
-
+  <footer><div><b>论文精读档案 066</b><span>轨迹标签 · 遥感特征 · 多模态分类</span></div><div><a href="#top">返回顶部 ↑</a><a href="index.html">进入项目图谱 →</a></div></footer>
   <script src="paper.js"></script>
 </body>
 </html>
