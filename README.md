@@ -27,4 +27,4 @@
 
 ## 论文专题
 
-`dist/paper.html` 是《Modeling Habitat Suitability of Migratory Birds from Remote Sensing Images Using Convolutional Neural Networks》的独立精读页面，详细介绍研究问题、数据与标签、DBIC算法、M-CNN结构、实验设计、定量和空间结果、贡献与局限；页面末章再说明怎样把方法迁移到青海湖湿地项目。
+`dist/paper.html` 是《Modeling Habitat Suitability of Migratory Birds from Remote Sensing Images Using Convolutional Neural Networks》的紧凑技术路线页面。它逐环节列出输入、处理、输出与下一环数据传递，并补充模型结构、实验结果、局限和青海湖湿地项目迁移方案。
